@@ -6,6 +6,8 @@
 	<packaging>war</packaging>
 	<version>1.0</version>
 	<name>mytwitter</name>
+<!-- URL追加 -->
+	<url>http://maven.apache.org</url>
 	<repositories>
 		<repository>
 			<id>eap</id>
@@ -36,6 +38,28 @@
 		<maven.compiler.target>1.6</maven.compiler.target>
 	</properties>
 	<dependencies>
+		<!-- 20140626 junit追加 -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- 20140626 servlet追加 -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!--<dependency>
+			<groupId>javax.sql.DataSource</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>1.4</version>
+			<scope>provided</scope>
+		</dependency>-->
+
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
@@ -64,6 +88,7 @@
 						<artifactId>maven-war-plugin</artifactId>
 						<version>2.1.1</version>
 						<configuration>
+							<warSourceExcludes>META-INF/context.xml</warSourceExcludes>
 							<outputDirectory>webapps</outputDirectory>
 							<warName>ROOT</warName>
 						</configuration>
@@ -72,4 +97,45 @@
 			</build>
 		</profile>
 	</profiles>
+
+	<build>
+		<!-- warName をROOT にするとtomcat-plugin に必要な設定の書き方が分からないので、warName をcalcserviceとした
+		指定するURL が異なるので注意-->
+		<finalName>mytwitter</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.1.1</version>
+				<configuration>
+<!--
+					<archive>
+						<manifestEntries>
+							<Built-By>Foga Co., LTD.</Built-By>
+							<Built-Time>${maven.build.timestamp}</Built-Time>
+							<Version>${project.version}</Version>
+						</manifestEntries>
+					</archive>
+-->
+				</configuration>
+			</plugin>
+
+			<!-- plugin so you can run mvn tomcat7:run -->
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<path>/${project.build.finalName}</path>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>mysql</groupId>
+						<artifactId>mysql-connector-java</artifactId>
+						<version>5.1.31</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</build>
 </project>
